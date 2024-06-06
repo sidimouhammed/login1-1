@@ -44,6 +44,7 @@ class _RectlmationState extends State<Rectlmation> {
   Widget build(BuildContext context) {
     final now = DateTime.now();
     valide = false;
+    etat = 'Envoie';
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.primaryContainer,
       appBar: AppBar(
@@ -256,7 +257,8 @@ class _RectlmationState extends State<Rectlmation> {
                                         noteController.text.trim(),
                                         descripController.text.trim(),
                                         valide,
-                                        now);
+                                        now,
+                                        etat);
 
                                     Navigator.pop(context);
                                     setState(() {
@@ -297,10 +299,14 @@ class _RectlmationState extends State<Rectlmation> {
       _selectedImage = File(returnedImage!.path);
     });
   }
-final credential = FirebaseAuth.instance.currentUser;
+
+  final credential = FirebaseAuth.instance.currentUser;
   Future addDataToSave(String semester, reclemationExamen, String nomMat,
-      String note, String descrp, valide, now) async {
-    await FirebaseFirestore.instance.collection('reclemations').doc(credential!.uid).set({
+      String note, String descrp, valide, now, etat) async {
+    await FirebaseFirestore.instance
+        .collection('reclemations')
+        .doc(credential!.uid)
+        .set({
       'semester': semester,
       'reclemationDeExamen': reclemationExamen,
       'nomMatiere': nomMat,
@@ -311,7 +317,8 @@ final credential = FirebaseAuth.instance.currentUser;
       'full_name': nom,
       'email': emailUser,
       'filiére': fillier,
-      'dateEnvoie': now.toString()
+      'dateEnvoie': now.toString(),
+      'etat': etat
       //'examen'
     });
   }
