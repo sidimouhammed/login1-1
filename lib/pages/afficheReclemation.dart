@@ -72,7 +72,7 @@ class _AfficheReclemationState extends State<AfficheReclemation> {
                         Text(datas[i]['full_name'] +
                             ' : Tu as reclamer sur la '),
                         Text(datas[i]['semester']),
-                        Text('Nom Du Matiere : ' + datas[i]['nomMatiere']),
+                        Text('Nom Du Matiere  : ' + datas[i]['nomMatiere']),
                         Text('La Note Exact : ' + datas[i]['noteExact']),
                         Text('envoie le ' + datas[i]['dateEnvoie'])
                       ],
