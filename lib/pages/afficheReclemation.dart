@@ -12,6 +12,7 @@ class AfficheReclemation extends StatefulWidget {
 class _AfficheReclemationState extends State<AfficheReclemation> {
   List<Map<String, dynamic>> studentsData = [];
   String? emailUser;
+  bool isLoading = true;
   List<QueryDocumentSnapshot> datas = [];
   getData() async {
     QuerySnapshot querySnapshot =
@@ -45,18 +46,20 @@ class _AfficheReclemationState extends State<AfficheReclemation> {
   void initState() {
     getData();
     getDataFromFirestore();
+    isLoading = false;
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.blueAccent,
           title: const Text('Reclemation Envoie'),
           centerTitle: true,
         ),
-        body: ListView.builder(
+        body:ListView.builder(
             itemCount: datas.length,
             itemBuilder: (context, i) {
               if (emailUser == datas[i]['email']) {
@@ -73,8 +76,46 @@ class _AfficheReclemationState extends State<AfficheReclemation> {
                             ' : Tu as reclamer sur la '),
                         Text(datas[i]['semester']),
                         Text('Nom Du Matiere  : ' + datas[i]['nomMatiere']),
-                        Text('La Note Exact : ' + datas[i]['noteExact']),
-                        Text('envoie le  ' + datas[i]['dateEnvoie'])
+                        //if (datas[i]['reclemationDeExamen'] == 'Oui')
+                          Text('La Note Exact : ' + datas[i]['noteExact']),
+                        
+                        Text('envoie le  ' + datas[i]['dateEnvoie']),
+                        if (datas[i]['etat'] == 'Envoie')
+                          Container(
+                              padding: EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                  color: Colors.blue[100],
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(10))),
+                              child: Text(
+                                  'Le Reclemation est : ' + datas[i]['etat'])),
+                        if (datas[i]['etat'] == 'Revisée')
+                          Container(
+                              padding: EdgeInsets.all(6),
+                              decoration: const BoxDecoration(
+                                  color: Colors.redAccent,
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(10))),
+                              child: Text(
+                                  'Le Reclemation est : ' + datas[i]['etat'])),
+                        if (datas[i]['etat'] == 'Accepte')
+                          Container(
+                              padding: EdgeInsets.all(6),
+                              decoration: const BoxDecoration(
+                                  color: Color.fromARGB(255, 134, 255, 82),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(10))),
+                              child: Text(
+                                  'Le Reclemation est : ' + datas[i]['etat'])),
+                        if (datas[i]['etat'] == 'En cours')
+                          Container(
+                              padding: EdgeInsets.all(6),
+                              decoration: const BoxDecoration(
+                                  color: Colors.blueAccent,
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(10))),
+                              child: Text(
+                                  'Le Reclemation est : ' + datas[i]['etat'])),
                       ],
                     ),
                   )),

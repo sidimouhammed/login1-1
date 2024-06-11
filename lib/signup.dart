@@ -12,6 +12,7 @@ import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path/path.dart' show basename;
 import 'dart:math';
@@ -88,77 +89,89 @@ class _SignupState extends State<Signup> {
   bool isVerified = false;
   bool isTimeout = false;
   Timer? timer;
-  
-void showVerificationDialog() async {
-  timer = Timer(const Duration(minutes: 4), () { // Timer de 5 minutes (300 secondes)
-    if (!isVerified) {
-      isTimeout = true;
-      Navigator.of(context).pop(); // Fermer le dialogue
-    }
-  });
-}
 
-register() async {
-  setState(() {
-    isLoading = true;
-  });
-
-  try {
-    final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-      email: _controllerEmail.text,
-      password: _controllerPassword.text,
-    );
-    await credential.user?.sendEmailVerification();
-    showVerificationDialog();
-    showDialog(
-      context: context,
-      barrierDismissible: false, // Empêcher de fermer le dialogue en cliquant à l'extérieur
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Vérification de l'e-mail"),
-          content: SizedBox(
-            width: MediaQuery.of(context).size.width * 0.7, // 70% de la largeur de l'écran
-            height: MediaQuery.of(context).size.height * 0.3, // 30% de la hauteur de l'écran
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center, // Centrer verticalement le contenu
-              crossAxisAlignment: CrossAxisAlignment.center, // Centrer horizontalement le contenu
-              children: [
-                Text("Un e-mail de vérification a été envoyé à ${_controllerEmail.text}. Veuillez vérifier votre e-mail dans les 4 minutes pour continuer."),
-                const SizedBox(height: 20),
-                const CircularProgressIndicator(
-                  color: Colors.blue, // Changez la couleur selon vos besoins
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-
-    // Vérifier périodiquement si l'e-mail est vérifié
-    while (!isVerified && !isTimeout) {
-      await Future.delayed(Duration(seconds: 3)); // Attendre 3 secondes avant chaque vérification
-      await FirebaseAuth.instance.currentUser?.reload(); // Recharger l'utilisateur pour obtenir les dernières informations
-      isVerified = FirebaseAuth.instance.currentUser?.emailVerified ?? false;
-    }
-
-    // Si l'utilisateur n'a pas vérifié son e-mail dans les 5 minutes, le supprimer
-    if (isTimeout && !isVerified) {
-      try {
-        await FirebaseAuth.instance.currentUser?.delete();
-      
-        Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => const Signup()));
-            showSnackBar(context, "Votre compte a été supprimé car vous n'avez pas vérifié votre e-mail dans les 5 minutes.");
-      } catch (e) {
-        showSnackBar(context, "Erreur lors de la suppression du compte : $e");
+  void showVerificationDialog() async {
+    timer = Timer(const Duration(minutes: 4), () {
+      // Timer de 5 minutes (300 secondes)
+      if (!isVerified) {
+        isTimeout = true;
+        Navigator.of(context).pop(); // Fermer le dialogue
       }
-      return; // Arrêter l'exécution du code après la suppression de l'utilisateur et la navigation
-    } else if (isVerified) {
-      Navigator.of(context).pop(); // Fermer le dialogue
-      showSnackBar(context, "Votre e-mail a été vérifié avec succès !");
-      // Continuer avec le reste du code après vérification de l'e-mail
-    }
+    });
+  }
+
+  register() async {
+    setState(() {
+      isLoading = true;
+    });
+    getData();
+
+    try {
+      final credential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: _controllerEmail.text,
+        password: _controllerPassword.text,
+      );
+      await credential.user?.sendEmailVerification();
+      showVerificationDialog();
+      showDialog(
+        context: context,
+        barrierDismissible:
+            false, // Empêcher de fermer le dialogue en cliquant à l'extérieur
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Vérification de l'e-mail"),
+            content: SizedBox(
+              width: MediaQuery.of(context).size.width *
+                  0.7, // 70% de la largeur de l'écran
+              height: MediaQuery.of(context).size.height *
+                  0.3, // 30% de la hauteur de l'écran
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment
+                    .center, // Centrer verticalement le contenu
+                crossAxisAlignment: CrossAxisAlignment
+                    .center, // Centrer horizontalement le contenu
+                children: [
+                  Text(
+                      "Un e-mail de vérification a été envoyé à ${_controllerEmail.text}. Veuillez vérifier votre e-mail dans les 4 minutes pour continuer."),
+                  const SizedBox(height: 20),
+                  const CircularProgressIndicator(
+                    color: Colors.blue, // Changez la couleur selon vos besoins
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+
+      // Vérifier périodiquement si l'e-mail est vérifié
+      while (!isVerified && !isTimeout) {
+        await Future.delayed(Duration(
+            seconds: 3)); // Attendre 3 secondes avant chaque vérification
+        await FirebaseAuth.instance.currentUser
+            ?.reload(); // Recharger l'utilisateur pour obtenir les dernières informations
+        isVerified = FirebaseAuth.instance.currentUser?.emailVerified ?? false;
+      }
+
+      // Si l'utilisateur n'a pas vérifié son e-mail dans les 5 minutes, le supprimer
+      if (isTimeout && !isVerified) {
+        try {
+          await FirebaseAuth.instance.currentUser?.delete();
+
+          Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (context) => const Signup()));
+          showSnackBar(context,
+              "Votre compte a été supprimé car vous n'avez pas vérifié votre e-mail dans les 5 minutes.");
+        } catch (e) {
+          showSnackBar(context, "Erreur lors de la suppression du compte : $e");
+        }
+        return; // Arrêter l'exécution du code après la suppression de l'utilisateur et la navigation
+      } else if (isVerified) {
+        Navigator.of(context).pop(); // Fermer le dialogue
+        showSnackBar(context, "Votre e-mail a été vérifié avec succès !");
+        // Continuer avec le reste du code après vérification de l'e-mail
+      }
       // Arrêter le timer une fois terminé
       timer!.cancel();
 
@@ -300,6 +313,25 @@ register() async {
     );
   }
 
+  List<QueryDocumentSnapshot> datas = [];
+  bool autorise = false;
+  getData() async {
+    QuerySnapshot querySnapshot =
+        await FirebaseFirestore.instance.collection('nouveau etudiant ').get();
+    datas.addAll(querySnapshot.docs);
+    print(datas);
+    for (int i = 0; i < datas.length; i++) {
+    
+    
+      if (_controllernni.text == datas[i]['nni']) {
+        print(datas[i]['nni']);
+        setState(() {
+          autorise = true;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -355,7 +387,7 @@ register() async {
                 controller: _controllernni,
                 keyboardType: TextInputType.number,
                 textInputAction: TextInputAction.next,
-                maxLength: 14,
+                maxLength: 10,
                 decoration: InputDecoration(
                   labelText: "NNI",
                   prefixIcon: const Icon(Icons.badge_outlined),
@@ -369,8 +401,10 @@ register() async {
                 validator: (String? value) {
                   if (value == null || value.isEmpty) {
                     return "Please enter NNI";
-                  } else if (value.length < 14) {
+                  } else if (value.length < 10) {
                     return "NNI doit etre de 14 chiffre.";
+                  } else if (autorise == false) {
+                    return "NNI no autorisé";
                   }
 
                   return null;
@@ -486,7 +520,6 @@ register() async {
               ),
               const SizedBox(height: 10),
               Container(
-                
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10.0),
                   color: Colors.grey[200]!
@@ -505,11 +538,14 @@ register() async {
                     });
                   },
                   items: <String>[
-                    'Réseaux informatiques et Télécommunications',
-                    'statistique',
-                    'informatique de gestion',
+                    "Réseaux informatiques et Télécommunications",
+                    "Statistique Appliquée á l'Economie",
+                    'Informatique de Gestion',
                     'Développement Informatique',
-                    'Finance & Comptabilité'
+                    'Finance & Comptabilité',
+                    'Banques & Assurances',
+                    'Gestion des Ressources Humaines',
+                    'Techniques Commerciales et Marketing'
                   ].map<DropdownMenuItem<String>>((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
@@ -678,6 +714,7 @@ register() async {
                       ),
                     ),
                     onPressed: () async {
+                       await getData();
                       if (_formKey.currentState!.validate() &&
                           imgName != null &&
                           imgPath != null) {

@@ -42,9 +42,9 @@ class _RectlmationState extends State<Rectlmation> {
 
   @override
   Widget build(BuildContext context) {
+    etat = 'Envoie';
     final now = DateTime.now();
     valide = false;
-    etat = 'Envoie';
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.primaryContainer,
       appBar: AppBar(
@@ -132,6 +132,8 @@ class _RectlmationState extends State<Rectlmation> {
               padding: const EdgeInsets.all(10),
               child: TextField(
                 controller: noteController,
+                keyboardType: TextInputType.number,
+                maxLength: 2,
                 decoration: InputDecoration(
                     hintText: "Note exacte",
                     border: OutlineInputBorder(
@@ -268,6 +270,8 @@ class _RectlmationState extends State<Rectlmation> {
                                       noteController.text = "";
                                       noteController.text = "";
                                       descripController.text = "";
+                                      _selectedImage = null;
+                                      urlImage = null;
                                     });
                                   },
                                 )
@@ -324,11 +328,15 @@ class _RectlmationState extends State<Rectlmation> {
   }
 
   Future saveImage() async {
-    var ImageName = basename(_selectedImage!.path);
-    var refStorage = FirebaseStorage.instance.ref('reclemations/$ImageName');
-    await refStorage.putFile(_selectedImage!);
+    if (_selectedImage != null) {
+      var ImageName = basename(_selectedImage!.path);
+      var refStorage = FirebaseStorage.instance.ref('reclemations/$ImageName');
+      await refStorage.putFile(_selectedImage!);
 
-    urlImage = await refStorage.getDownloadURL();
+      urlImage = await refStorage.getDownloadURL();
+    } else {
+      urlImage = null;
+    }
   }
 
   Future<void> getDataFromFirestore() async {
