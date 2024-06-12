@@ -42,7 +42,7 @@ class _RectlmationState extends State<Rectlmation> {
 
   @override
   Widget build(BuildContext context) {
-    etat = 'Envoie';
+    etat = 'Envoyée';
     final now = DateTime.now();
     valide = false;
     return Scaffold(
@@ -309,8 +309,7 @@ class _RectlmationState extends State<Rectlmation> {
       String note, String descrp, valide, now, etat) async {
     await FirebaseFirestore.instance
         .collection('reclemations')
-        .doc(credential!.uid)
-        .set({
+        .add({
       'semester': semester,
       'reclemationDeExamen': reclemationExamen,
       'nomMatiere': nomMat,

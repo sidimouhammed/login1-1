@@ -52,14 +52,13 @@ class _AfficheReclemationState extends State<AfficheReclemation> {
 
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.blueAccent,
           title: const Text('Reclemation Envoie'),
           centerTitle: true,
         ),
-        body:ListView.builder(
+        body: ListView.builder(
             itemCount: datas.length,
             itemBuilder: (context, i) {
               if (emailUser == datas[i]['email']) {
@@ -69,27 +68,38 @@ class _AfficheReclemationState extends State<AfficheReclemation> {
                       child: ListTile(
                     leading: Text((i + 1).toString()),
                     title: Column(
-                      //mainAxisAlignment: MainAxisAlignment.start,
+                      //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(datas[i]['full_name'] +
-                            ' : Tu as reclamer sur la '),
-                        Text(datas[i]['semester']),
-                        Text('Nom Du Matiere  : ' + datas[i]['nomMatiere']),
-                        //if (datas[i]['reclemationDeExamen'] == 'Oui')
-                          Text('La Note Exact : ' + datas[i]['noteExact']),
-                        
-                        Text('envoie le  ' + datas[i]['dateEnvoie']),
-                        if (datas[i]['etat'] == 'Envoie')
+                        Column(
+                          children: [
+                            Text(datas[i]['full_name']),
+                            Text('Tu as poster un reclemation'),
+                          ],
+                        ),
+                        Text(
+                            'Semester Reclamer est :  ' + datas[i]['semester']),
+                        Text('Nom Du Matiere    : ' + datas[i]['nomMatiere']),
+                        //if (datas[i]['reclemationDeExamen'] == 'Non')
+                        Text('La Note Exact        : ' + datas[i]['noteExact']),
+                        // if (datas[i]['reclemationDeExamen'] == 'Oui') Text(''),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(child: Text('Envoyée le : ')),
+                            Expanded(child: Text(datas[i]['dateEnvoie'])),
+                          ],
+                        ),
+                        if (datas[i]['etat'] == 'Envoyée')
                           Container(
                               padding: EdgeInsets.all(6),
-                              decoration: BoxDecoration(
-                                  color: Colors.blue[100],
+                              decoration: const BoxDecoration(
+                                  color: Colors.grey,
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(10))),
                               child: Text(
                                   'Le Reclemation est : ' + datas[i]['etat'])),
-                        if (datas[i]['etat'] == 'Revisée')
+                        if (datas[i]['etat'] == 'Refusée')
                           Container(
                               padding: EdgeInsets.all(6),
                               decoration: const BoxDecoration(
@@ -98,7 +108,7 @@ class _AfficheReclemationState extends State<AfficheReclemation> {
                                       BorderRadius.all(Radius.circular(10))),
                               child: Text(
                                   'Le Reclemation est : ' + datas[i]['etat'])),
-                        if (datas[i]['etat'] == 'Accepte')
+                        if (datas[i]['etat'] == 'Acceptée')
                           Container(
                               padding: EdgeInsets.all(6),
                               decoration: const BoxDecoration(
@@ -107,7 +117,7 @@ class _AfficheReclemationState extends State<AfficheReclemation> {
                                       BorderRadius.all(Radius.circular(10))),
                               child: Text(
                                   'Le Reclemation est : ' + datas[i]['etat'])),
-                        if (datas[i]['etat'] == 'En cours')
+                        if (datas[i]['etat'] == 'Révisée')
                           Container(
                               padding: EdgeInsets.all(6),
                               decoration: const BoxDecoration(

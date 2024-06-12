@@ -54,7 +54,6 @@ class _ProfileState extends State<Profile> {
               _nniController.text = studentDoc['NNI'] ?? '';
               _phoneNumberController.text = studentDoc['tel'] ?? '';
               _emailController.text = studentDoc['Email'] ?? '';
-            
             });
             print("Data fetched successfully");
           }
@@ -93,20 +92,23 @@ class _ProfileState extends State<Profile> {
           : ListView(
               children: [
                 const SizedBox(height: 25),
-                 CircleAvatar(
-                  backgroundColor: Colors.white,
-                  maxRadius: 60,
-                
-                  child:  ClipOval(
-                  child:  Image.network(
-                    studentsData[0]['urlimage'],
-                    width: 145,
-                    height: 145,
-                    fit: BoxFit.cover,
+                Container(
+                  height: 190,
+                  width: 190,
+                  child: CircleAvatar(
+                    //backgroundColor: Colors.white,
+                    // radius: 60,
+                    maxRadius: 80,
+                    child: ClipOval(
+                      child: Image.network(
+                        studentsData[0]['urlimage'],
+                        width: 145,
+                        height: 145,
+                        fit: BoxFit.fill,
+                      ),
+                    ),
                   ),
-                ) ,
                 ),
-              
                 Padding(
                   padding: const EdgeInsets.all(28.0),
                   child: Container(
@@ -207,7 +209,7 @@ class _ProfileState extends State<Profile> {
                                         ],
                                       ));
                             },
-                            child: const Text('Modifier'),
+                            child: const Text('Contact Admin'),
                           ),
                         )
                       ],
